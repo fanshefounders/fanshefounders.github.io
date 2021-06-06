@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="resources/css/main.css" />
+    <title>| Virtual Stadium Solutions</title>
+  </head>
+  <body>
+
+    <!-- Navigation Menu -->
+    <div class="nav-container">   
+      <nav class="navbar">
+        <h1 id="navbar-logo">FANSHE</h1>
+        <div class="menu-toggle" id="mobile-menu">
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </div>
+        <ul class="nav-menu">
+          <li><a href="#" class="nav-links">Home</a></li>
+          <li><a href="#" class="nav-links">Services</a></li>
+          <li><a href="#" class="nav-links">Login</a></li>
+          <li><a href="#" class="nav-links nav-links-btn" onclick=openModal()>Sign Up</a></li>
+          <!-- <li><a href="#" class="nav-links-btn" >Sign Up</a></li> -->
+        </ul>
+      </nav>
+    </div>
+
+    <!-- Sign Up Modal Form -->
+    <div class="modal" id="email-modal">
+      <div class="modal-content">
+        <span class="close-btn" onclick=closeModal()>&times;</span>
+        <form action="/" method="GET" class="modal-form" id="form">
+        <h1>Sign Up</h1>
+        <div class="form-validation">
+          <input type="text" class="modal-input" id="name" name="name" placeholder= "Enter Your Name">
+          <p> Error Message </p>
+        </div>
+        <div class="form-validation">
+          <input type="email" class="modal-input" id="email" name="email" placeholder="Enter Your Email">
+          <p> Error Message </p>
+        </div>
+        <div class="form-validation">
+          <input type="password" class="modal-input" id="password" name="password" placeholder="Enter Your Password">
+          <p> Error Message </p>
+        </div>
+        <div class="form-validation">
+          <input type="password" class="modal-input" id="password-confirm" name="password" placeholder="Confirm Your Password">
+          <p> Error Message </p>
+        </div>
+        <input type="submit" class="modal-input-btn" value="Sign Up">
+        <span class="modal-input-login">Already have an account? Login <a href="#">here</a>
+        </span>
+        </form>
+
+      </div>
+    
+    </div>
+   
+
+    <!-- Event Coming Soon-->
+    <header>
+      <div class="hero">
+        <h2>DATES COMING SOON</h1>
+        <hr />
+        <p id="launch"></p>
+      </div>
+    </header>
+
+    <!-- Scripts Linked -->
+    <script src="resources/js/main.js"></script>
+
+    <!-- Countdown to Event -->
+    <script>
+      var countDownDate= new Date("Jun 18, 2021 00:00:00").getTime();
+      var x = setInterval(function() {
+        var now = new Date().getTime();
+        var distance = countDownDate - now;
+        var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        document.getElementById("launch").innerHTML = days + "d " + hours + "h " + minutes + "m " + seconds + "s ";
+
+          if (distance < 0) {
+            clearInterval(x);
+            document.getElementById("launch").innerHTML = "EXPIRED"
+
+          }
+
+      }, 1000)
+
+    </script>
+
+  </body>
+</html>
