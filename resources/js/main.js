@@ -1,101 +1,90 @@
-const menu = document.querySelector("#mobile-menu");
-const menuLinks = document.querySelector(".nav-menu");
+const chatForm = document.getElementById('chat-form');
+const chatMessages = document.querySelector('.chat-messages');
+const roomName = document.getElementById('room-name');
+const userList = document.getElementById('users');
 
-menu.addEventListnner("click", function () {
-  menu.classList.toggle("is-active");
-  menuLinks.classList.toggle("active");
+// Get username and room from URL
+const { username, room } = Qs.parse(location.search, {
+  ignoreQueryPrefix: true,
 });
 
-//Could make constant variables: Modal Items (vars)
+const socket = io();
 
-function openModal() {
-  var modal = document.getElementById("email-modal");
-  modal.style.display = "block";
-}
+// Join chatroom
+socket.emit('joinRoom', { username, room });
 
-function closeModal() {
-  var modal = document.getElementById("email-modal");
-  modal.style.display = "none";
-}
+// Get room and users
+socket.on('roomUsers', ({ room, users }) => {
+  outputRoomName(room);
+  outputUsers(users);
+});
 
-//THIS MF ISN'T WORKING SMH
-window.onclick = function (event) {
-  var modal = document.getElementById("email-modal");
-  if (event.target === modal) {
-    modal.style.display = "none";
-  }
-};
+// Message from server
+socket.on('message', (message) => {
+  console.log(message);
+  outputMessage(message);
 
-//Form Validation
-const form = document.getElementById("form");
-const name = document.getElementById("name");
-const email = document.getElementById("email");
-const password = document.getElementById("password");
-const passwordConfirm = document.getElementById("password-confirm");
+  // Scroll down
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+});
 
-//Show Error Message
-function showError(input, message) {
-  const formValidation = input.parentElement;
-  formValidation.className = "form-validation error";
-
-  const errorMessage = formValidation.querySelector("p");
-  errorMessage.innerText = message;
-}
-
-//Show Valid Message
-function showValid(input) {
-  const formValidation = input.parentElement;
-  formValidation.className = "form-validation valid";
-}
-
-//Check required fields
-function checkRequired(inputArr) {
-  inputArr.forEach(function (input) {
-    if (input.value.trim() === "") {
-      showError(input, `${getFieldName(input)} is required`);
-    } else {
-      showValid(input);
-    }
-  });
-}
-//Check input length
-
-function checkLength(input, min, max) {
-  if ((input, value.length < min)) {
-    showError(
-      input,
-      `${getFieldName(input)} must be at least ${min} characters`
-    );
-  } else if (input.value.length > max) {
-    showError(
-      input,
-      `${getFieldName(input)} must be at less ${max} characters`
-    );
-  } else {
-    showValid(input);
-  }
-}
-
-//Check passwords match
-function passwordMatch(input1, input2) {
-  if (input1.value !== input2.value) {
-    showError(input2, "Passowrds do not match");
-  }
-}
-
-//Get FieldName
-function getFieldName(input) {
-  return input.name.charAt(0).toUpperCase() + input.name.slice(1);
-}
-
-//Event Listeners
-form.addEventListener("submit", (e) => {
+// Message submit
+chatForm.addEventListener('submit', (e) => {
   e.preventDefault();
 
-  checkRequired([name, email, password, passwordConfirm]);
-  checkLength(name, 3, 30);
-  checkLength(password, 8, 25);
-  checkLength(passwordConfirm, 8, 25);
+  // Get message text
+  let msg = e.target.elements.msg.value;
 
-  passwordMatch(password, passwordConfirm);
+  msg = msg.trim();
+
+  if (!msg) {
+    return false;
+  }
+
+  // Emit message to server
+  socket.emit('chatMessage', msg);
+
+  // Clear input
+  e.target.elements.msg.value = '';
+  e.target.elements.msg.focus();
+});
+
+// Output message to DOM
+function outputMessage(message) {
+  const div = document.createElement('div');
+  div.classList.add('message');
+  const p = document.createElement('p');
+  p.classList.add('meta');
+  p.innerText = message.username;
+  p.innerHTML += `<span>${message.time}</span>`;
+  div.appendChild(p);
+  const para = document.createElement('p');
+  para.classList.add('text');
+  para.innerText = message.text;
+  div.appendChild(para);
+  document.querySelector('.chat-messages').appendChild(div);
+}
+
+// Add room name to DOM
+function outputRoomName(room) {
+  roomName.innerText = room;
+}
+
+// Add users to DOM
+function outputUsers(users) {
+  userList.innerHTML = '';
+  users.forEach((user) => {
+    const li = document.createElement('li');
+    li.innerText = user.username;
+    userList.appendChild(li);
+  });
+}
+
+//Prompt the user before leave chat room
+document.getElementById('leave-btn').addEventListener('click', () => {
+  const leaveRoom = confirm('Are you sure you want to leave the chatroom?');
+  if (leaveRoom) {
+    window.location = '../index.html';
+  } else {
+  }
 });
